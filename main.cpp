@@ -8,32 +8,34 @@
 
 using namespace std;
 
-#define RESET "\033[0m"
-#define RED "\033[31m"
+#define NEWLINE_SYMBOL "\033[31m↵ \033[0m"
 
-string red(string message)
-{
-  return RED + message + RESET;
-}
-
-#define NEWLINE_SYMBOL red("↵ ");
-
-int main()
+int main(int argc, char *argv[])
 {
   struct winsize w;
   ioctl(0, TIOCGWINSZ, &w);
   unsigned int terminalWidth = w.ws_col;
 
   clock_t timeBegin;
+  string file = "text.txt";
 
-  ifstream t("text.txt");
+  if (argc >= 2) {
+    file = argv[1];
+  }
+
+  ifstream t(file);
   string text(
       (istreambuf_iterator<char>(t)),
       istreambuf_iterator<char>());
 
-  text += "\n";
-
   const unsigned int textLength = text.length();
+
+  if (textLength <= 0) {
+    cout << "The file you loaded seems to be empty..." << endl;
+    return 0;
+  }
+
+  text += "\n";
 
   string currentLine = "";
   vector<string> wrappedText;
