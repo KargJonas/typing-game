@@ -20,22 +20,20 @@ using namespace std;
 #define RESET "\033[0m"
 #define RED "\033[31m"
 
-string red(string message) { return RED + message + RESET; }
+string red(string message)
+{
+  return RED + message + RESET;
+}
 
 #define NEWLINE_SYMBOL red("↵ ");
-
-string styleText(string text)
-{
-  return text.substr(0, text.length() - 1) + NEWLINE_SYMBOL;
-}
 
 int main()
 {
   struct winsize w;
   ioctl(0, TIOCGWINSZ, &w);
-  unsigned int terminalWidth = w.ws_col;
+  int terminalWidth = w.ws_col;
 
-  clock_t begin;
+  // clock_t begin;
 
   ifstream t("text.txt");
   string text(
@@ -56,20 +54,28 @@ int main()
 
   cout << "Press space to start the game!" << endl;
   while (getch() != ' ') {
-    begin = clock();
+    // begin = clock();
   }
 
   unsigned int errors = 0;
   unsigned int lineCount = wrappedText.size();
   string line;
+  string displayLine;
 
   for (unsigned int i = 0; i < lineCount; i++) {
     // The text, which we are comparing the user's input t
     line = wrappedText[i];
 
     while (line.length() != 0) {
+      // The text, which is displayed to the user
+      displayLine = line.substr(0, terminalWidth);
+
+      if (line.length() < terminalWidth - 1) {
+        displayLine += NEWLINE_SYMBOL;
+      }
+
       // Overwriting the last line with the current one
-      cout << styleText(line) << "\r" << flush;
+      cout << displayLine << "\r" << flush;
 
       if (line[0] == getch()) {
         line.erase(0, 1);
