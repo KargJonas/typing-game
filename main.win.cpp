@@ -25,9 +25,9 @@ char getch() {
 
 int main(int argc, char *argv[])
 {
-  struct winsize w;
-  ioctl(0, TIOCGWINSZ, &w);
-  unsigned int terminalWidth = w.ws_col;
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+  unsigned int terminalWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
 
   clock_t timeBegin;
   string file = "text.txt";
