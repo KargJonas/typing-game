@@ -1,10 +1,8 @@
 /* ** ToDo **
- *  - Horizontal overflow
  *  - Determine typing speed
  *      - Characters
  *      - Words
  *  - Error highlighting
- *
  */
 
 #include "getch.h"
@@ -25,13 +23,13 @@ string red(string message)
   return RED + message + RESET;
 }
 
-#define NEWLINE_SYMBOL red("↵ ");
+#define NEWLINE_SYMBOL red("↵");
 
 int main()
 {
   struct winsize w;
   ioctl(0, TIOCGWINSZ, &w);
-  int terminalWidth = w.ws_col;
+  unsigned int terminalWidth = w.ws_col;
 
   // clock_t begin;
 
@@ -59,6 +57,7 @@ int main()
 
   unsigned int errors = 0;
   unsigned int lineCount = wrappedText.size();
+  unsigned int lineLength = 0;
   string line;
   string displayLine;
 
@@ -67,11 +66,17 @@ int main()
     line = wrappedText[i];
 
     while (line.length() != 0) {
-      // The text, which is displayed to the user
-      displayLine = line.substr(0, terminalWidth);
+      lineLength = line.length();
 
-      if (line.length() < terminalWidth - 1) {
+      // The text, which is displayed to the user
+      displayLine = line.substr(0, min(terminalWidth, lineLength) - 1);
+
+      if (lineLength < terminalWidth) {
         displayLine += NEWLINE_SYMBOL;
+
+        if (lineLength < terminalWidth - 1) {
+          displayLine += " ";
+        }
       }
 
       // Overwriting the last line with the current one
