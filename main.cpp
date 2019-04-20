@@ -1,6 +1,5 @@
 /* ** ToDo **
- *  - Don't split by screen with but by \n in text.
- *      - Horizontal overflow
+ *  - Horizontal overflow
  *  - Determine typing speed
  *      - Characters
  *      - Words
@@ -8,24 +7,28 @@
  *
  */
 
-// #include "./colors.h"
+#include "getch.h"
 #include <fstream>
 #include <iostream>
 #include <math.h>
 #include <streambuf>
 #include <sys/ioctl.h>
-#include <termios.h>
-#include <unistd.h>
 #include <vector>
-#include "getch.h"
 using namespace std;
+
+#define RESET "\033[0m"
+#define RED "\033[31m"
 
 string red(string message)
 {
-  return "\033[31m" + message + "\033[0m";
+  return RED + message + RESET;
 }
 
 const string newlineSymbol = red("↵ ");
+
+string styleText(string text) {
+  return text.substr(0, text.length() - 1) + newlineSymbol;
+}
 
 int main()
 {
@@ -56,28 +59,32 @@ int main()
 
   unsigned int errors = 0;
   unsigned int lineCount = wrappedText.size();
+  string line;
+  string displayLine;
 
   for (unsigned int i = 0; i < lineCount; i++) {
-    string line = wrappedText[i];
-    string displayLine = line.substr(0, line.length() - 1) + newlineSymbol;
+    // The text, which we are comparing the user's input t
+    line = wrappedText[i];
+
+    // The text, which is displayed to the user
+    displayLine = styleText(line);
+    cout <<  displayLine;
+    return 0;
 
     while (line.length() != 0) {
       cout << displayLine << "\r" << flush;
       char input;
       bool correct = false;
 
-      do {
-        input = getch();
+      input = getch();
 
-        if (line[0] == input) {
-          correct = true;
-        } else {
-          errors++;
-        }
-      } while (!correct);
-
-      line.erase(0, 1);
-      displayLine = line.substr(0, line.length() - 1) + newlineSymbol;
+      if (line[0] == input) {
+        correct = true;
+        line.erase(0, 1);
+        displayLine = styleText(line);
+      } else {
+        errors++;
+      }
     }
   }
 
