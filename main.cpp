@@ -1,10 +1,3 @@
-/* ** ToDo **
- *  - Determine typing speed
- *      - Characters
- *      - Words
- *  - Error highlighting
- */
-
 #include "getch.h"
 #include <ctime>
 #include <fstream>
@@ -23,7 +16,7 @@ string red(string message)
   return RED + message + RESET;
 }
 
-#define NEWLINE_SYMBOL red("↵");
+#define NEWLINE_SYMBOL red("↵ ");
 
 int main()
 {
@@ -31,17 +24,21 @@ int main()
   ioctl(0, TIOCGWINSZ, &w);
   unsigned int terminalWidth = w.ws_col;
 
-  // clock_t begin;
+  clock_t timeBegin;
 
   ifstream t("text.txt");
   string text(
       (istreambuf_iterator<char>(t)),
       istreambuf_iterator<char>());
 
+  text += "\n";
+
+  const unsigned int textLength = text.length();
+
   string currentLine = "";
   vector<string> wrappedText;
 
-  for (unsigned int i = 0; i < text.length(); i++) {
+  for (unsigned int i = 0; i <= textLength; i++) {
     currentLine += text[i];
 
     if (text[i] == '\n') {
@@ -50,9 +47,12 @@ int main()
     }
   }
 
+  currentLine.clear();
+  text.clear();
+
   cout << "Press space to start the game!" << endl;
   while (getch() != ' ') {
-    // begin = clock();
+    timeBegin = clock();
   }
 
   unsigned int errors = 0;
@@ -71,12 +71,8 @@ int main()
       // The text, which is displayed to the user
       displayLine = line.substr(0, min(terminalWidth, lineLength) - 1);
 
-      if (lineLength < terminalWidth) {
+      if (lineLength < terminalWidth - 1) {
         displayLine += NEWLINE_SYMBOL;
-
-        if (lineLength < terminalWidth - 1) {
-          displayLine += " ";
-        }
       }
 
       // Overwriting the last line with the current one
@@ -90,7 +86,15 @@ int main()
     }
   }
 
-  cout << "Errors: " << errors << endl;
+  clock_t timeEnd = clock();
+  int time = (timeEnd - timeBegin) / 1000.0;
+  double typingSpeed = textLength / (time / 60.0);
+
+  cout << "[-] Time:\t" << floor(time / 60.0) << "min " << time % 60 << "sec " << endl;
+  cout << "[-] Speed:\t" << typingSpeed << " chars/min" << endl;
+  cout << "[-] Characters:\t" << textLength << endl;
+  cout << "[-] Errors: \t" << errors << endl;
+  cout << "[-] Accuracy: \t" << 100 - (min(textLength, errors) / float(textLength)) * 100.0 << "%" << endl;
 
   return 0;
 }
