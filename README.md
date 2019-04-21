@@ -1,4 +1,6 @@
-## This is a simple typing game.
+> It only works on Linux for now, maybe I'll try to get it working on windows at some point.
+
+## This is a simple terminal typing game.
 ![example-0](example-0.png)
 
 ### It provides some statistics:
