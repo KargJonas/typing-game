@@ -89,10 +89,10 @@ int main(int argc, char *argv[])
   }
 
   clock_t timeEnd = clock();
-  int time = (timeEnd - timeBegin) / 1000.0;
-  double typingSpeed = textLength / (time / 60.0);
+  int time = (timeEnd - timeBegin) / 1000 + 0;
+  double typingSpeed = round(textLength / time);
 
-  cout << "[-] Time:\t" << floor(time / 60.0) << "min " << time % 60 << "sec " << endl;
+  cout << "[-] Time:\t" << time / 60 << "min " << time % 60 << "sec " << endl;
   cout << "[-] Speed:\t" << typingSpeed << " chars/min" << endl;
   cout << "[-] Characters:\t" << textLength << endl;
   cout << "[-] Errors: \t" << errors << endl;
